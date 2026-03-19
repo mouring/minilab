@@ -1,0 +1,75 @@
+# OpenStack
+
+Initial documentation for doing kolla-ansible in the minilab configuration
+
+
+## Initial Setup
+source .env/bin/activate
+kolla-ansible bootstrap-servers -i lab
+kolla-ansible prechecks -i lab
+kolla-ansible deploy -i lab
+kolla-ansible post-deploy -i lab
+
+## Tear Down
+kolla-ansible destroy -i lab --yes-i-really-really-mean-it
+
+## New Controller (untested)
+kolla-ansible bootstrap-servers -i lab --limit <NEW_CONTROLLER>
+kolla-ansible pull -i lab --limit <NEW_CONTROLLER>
+kolla-ansible deploy -i lab --limit control
+
+## Remove Controller (document)
+
+... todo ..,
+
+## New Compute 
+- Add it to the [compute] section
+kolla-ansible bootstrap-servers -i lab --limit <NEW_COMPUTE>
+kolla-ansible pull -i lab --limit <NEW_COMPUTE>
+kolla-ansible deploy -i lab --limit <NEW_COMPUTE>
+
+## Live migration to new Compute Node (untested)
+openstack server migrate <TARGET_COMPUTE> --live-migration --host <NEW_COMPUTE> --os-compute-api-version 2.30
+
+## Remove Compute
+source /etc/kolla/admin-openrc.sh
+export OS_CLIENT_CONFIG_FILE=/etc/kolla/clouds.yaml
+openstack compute service list
+openstack compute service set <REMOVE_COMPUTE> nova-compute --disable
+## If there are resources being used
+openstack server list --all-projects --host <REMOVE_COMPUTE> -f value -c ID | while read server; do
+  openstack server migrate --live-migration <EXISTING_COMPUTE>
+done
+kolla-ansible stop -i lab --yes-i-really-really-mean-it  --limit <REMOVE_COMPUTE>
+openstack network agent list --host <REMOVE_COMPUTE> -f value -c ID | while read id; do
+  openstack network agent delete $id
+done
+openstack compute service list --os-compute-api-version 2.53 --host <REMOVE_COMPUTE> -f value -c ID | while read id; do
+  openstack compute service delete --os-compute-api-version 2.53 $id
+done
+
+## -- Other junk --
+
+## reconfigure (-l limits to a subsystem)
+kolla-ansible reconfigure -i lab [-l ..]
+
+## Setup for client
+source /etc/kolla/admin-openrc.sh
+export OS_CLIENT_CONFIG_FILE=/etc/kolla/clouds.yaml
+
+## Deploy new node
+kolla-ansible bootstrap-servers -i lab --limit NODENAME
+kolla-ansible pull -i lab --limit NODENAME
+kolla-ansible deploy -i lab  --limit NODENAME
+
+## References
+
+- NFS: https://docs.openstack.org/kolla-ansible/2025.2/reference/storage/cinder-guide.html
+- Gen Config: https://docs.openstack.org/kolla-ansible/2025.2/user/quickstart.html
+- Zun Config: https://docs.openstack.org/zun/latest/contributor/quickstart.html
+- TLS Config: https://docs.openstack.org/kolla-ansible/2025.2/admin/tls.html
+- Add/Remove Nodes: https://docs.openstack.org/kolla-ansible/latest/user/adding-and-removing-hosts.html
+- MultiNode: https://docs.openstack.org/kolla-ansible/latest/user/multinode.html
+- Useful Page: https://superuser.openinfra.org/articles/kolla-ansible-openstack-installation-ubuntu-24-04/
+- Single Node Ceph: https://www.redhat.com/en/blog/ceph-cluster-single-machine
+- Proxy Cache (Harbor): https://goharbor.io/docs/2.1.0/administration/configure-proxy-cache/
