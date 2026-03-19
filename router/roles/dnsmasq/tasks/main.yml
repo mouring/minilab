@@ -1,6 +1,5 @@
 ---
 - name: Install dnsmasq and dnsutils
-  become: true
   ansible.builtin.package:
     name:
       - dnsmasq
@@ -8,14 +7,12 @@
     state: present
 
 - name: Enable/Start service dnsmasq
-  become: true
   ansible.builtin.service:
     name: dnsmasq
     state: started
     enabled: yes
 
 - name: Copy Config /etc/dnsmasq.d/dns.conf
-  become: true
   ansible.builtin.copy:
     src: dns.conf
     dest: /etc/dnsmasq.d/dns.conf

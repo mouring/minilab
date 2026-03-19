@@ -1,9 +1,12 @@
-- name: Provision System
-  hosts: localhost
+---
+- hosts: localhost
+  become: yes
+  vars:
+    webpath: /data/web
   roles:
-   - monitoring
-   - networking
-   - podman
-   - dnsmasq
-   - nfsd
-   - rocky_mirror
+    - monitoring
+    - networking
+    - podman
+    - dnsmasq
+    - nfsd
+    - rocky_mirror

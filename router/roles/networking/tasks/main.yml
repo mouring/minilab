@@ -1,13 +1,11 @@
 ---
 - name: Install iptables-persistent
-  become: true
   ansible.builtin.package:
     name:
       - iptables-persistent
     state: present
 
 - name: Add an Ethernet connection with static IP configuration
-  become: true
   community.general.nmcli:
     conn_name: int-eth0
     ifname: eth0
@@ -16,7 +14,6 @@
     state: present
 
 - name: Enable ipv4 ip_forwarding in sysctl.conf
-  become: true 
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
     value: '1'
@@ -25,7 +22,6 @@
     sysctl_file: /etc/sysctl.conf
 
 - name: Add the MASQUERADE rule to the POSTROUTING chain
-  become: true 
   ansible.builtin.iptables:
     table: nat
     chain: POSTROUTING
@@ -35,7 +31,6 @@
     state: present
 
 - name: Allow related and established connections (essential for return traffic)
-  become: true 
   ansible.builtin.iptables:
     chain: INPUT
     ctstate: ESTABLISHED,RELATED
@@ -43,7 +38,6 @@
     state: present
 
 - name: Save Firewall state
-  become: true 
   community.general.iptables_state:
     ip_version: ipv4
     state: saved

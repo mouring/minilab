@@ -1,19 +1,16 @@
 ---
 - name: Install NFS server
-  become: true
   ansible.builtin.package:
     name: nfs-kernel-server
     state: present
 
 - name: Restart/Start service nfs server
-  become: true
   ansible.builtin.service:
     name: nfs-kernel-server
     state: started
     enabled: yes
 
 - name: Copy Config /etc/exports
-  become: true
   ansible.builtin.copy:
     src: exports
     dest: /etc/exports

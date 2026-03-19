@@ -1,10 +1,12 @@
 - name: Build Rocky10 Mirror container
+  become: no
   containers.podman.podman_image:
     name: 'localhost/rocky10_mirror'
     tag: 'latest'
     path: roles/rocky_mirror/tasks/rocky10_mirror/
 
 - name: Mirror Rocky10
+  become: no
   containers.podman.podman_container:
     name: mirror_rocky10
     image: 'localhost/rocky10_mirror:latest'

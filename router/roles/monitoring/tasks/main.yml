@@ -1,6 +1,5 @@
 ---
 - name: Install Monitoring tools
-  become: true
   ansible.builtin.package:
     name:
       - smartmontools
