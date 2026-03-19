@@ -1,0 +1,15 @@
+- name: Build Rocky10 Mirror container
+  containers.podman.podman_image:
+    name: 'localhost/rocky10_mirror'
+    tag: 'latest'
+    path: roles/rocky_mirror/tasks/rocky10_mirror/
+
+- name: Mirror Rocky10
+  containers.podman.podman_container:
+    name: mirror_rocky10
+    image: 'localhost/rocky10_mirror:latest'
+    cmd_args: --rm
+    detach: false
+    volumes:
+      - '/data/web/rocky/10-mirror:/data'
+  tags: mirror_rocky10
