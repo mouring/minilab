@@ -13,5 +13,5 @@
     cmd_args: --rm
     detach: false
     volumes:
-      - '/data/web/rocky/10-mirror:/data'
+      - '{{ webpath }}/rocky/10-mirror:/data'
   tags: mirror_rocky10
