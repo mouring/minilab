@@ -1,9 +1,9 @@
 - name: Provision System
   hosts: localhost
   roles:
-#   - monitoring
-#   - networking
-#   - podman
-#   - dnsmasq
-#   - nfsd
+   - monitoring
+   - networking
+   - podman
+   - dnsmasq
+   - nfsd
    - rocky_mirror
